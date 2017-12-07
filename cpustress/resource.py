@@ -1,4 +1,5 @@
 import pip
+pip.main(['install', 'heatclient'])
 pip.main(['install', 'novaclient'])
 import logging
 import os
