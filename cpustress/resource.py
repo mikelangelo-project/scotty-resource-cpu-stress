@@ -1,6 +1,3 @@
-import pip
-pip.main(['install', 'python_heatclient'])
-pip.main(['install', 'python_novaclient'])
 import logging
 import os
 from time import sleep
