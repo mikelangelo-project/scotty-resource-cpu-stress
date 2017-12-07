@@ -8,7 +8,7 @@ cpu_stress_resource = None
 
 
 def deploy(context):
-    logger.info('Deploy iperf with heat')
+    logger.info('Deploy cpu-stress with heat')
     global cpu_stress_resource
     cpu_stress_resource = CPUStressResource(context)
     cpu_stress_resource.deploy(context)
