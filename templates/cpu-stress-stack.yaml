@@ -1,0 +1,98 @@
+heat_template_version: 2015-10-15
+
+description: >
+  HEAT template to deploy one server with a cpu stressor into an existing neutron tenant network and assign floating IP 
+  address to the cpu-stress-server so it is routable from the public network
+
+parameters:
+  image:
+    type: string
+    description: image for cpu stress server
+    default: 4beaa052-8e21-4264-9ed9-2dfa41fd254f 
+  flavor:
+    type: string
+    description: flavor for cpu stress server
+    default: kvm.m1.small
+  public_net_id:
+    type: string
+    description: ID of public network for which floating IP addresses will be allocated
+  private_net_id:
+    type: string
+    description: ID of private network into which servers get deployed
+  private_subnet_id:
+    type: string
+    description: ID of private sub network into which servers get deployed
+  timeout:
+    type: number
+    description: Timeout for WaitCondition
+    default: 600
+
+resources:
+  cpu-stress_wait_condition:
+    type: OS::Heat::WaitCondition
+    properties:
+      handle: { get_resource: cpu-stress_wait_handle }
+      timeout: { get_param: timeout }
+
+  cpu-stress_wait_handle:
+    type: OS::Heat::WaitConditionHandle
+
+  cpu-stress_signal:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: { get_file: fragments/cpu-stress_signal.sh }
+
+  cpu-stress_write_heat_params:
+    type: "OS::Heat::SoftwareConfig"
+    properties:
+      group: ungrouped
+      config:
+        str_replace:
+          template: { get_file: fragments/write-heat-params.yaml }
+          params:
+            "$WC_NOTIFY": { get_attr: ['cpu-stress_wait_handle', 'curl_cli'] }
+
+  cpu-stress_configure:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: { get_file: fragments/cpu-stress_configure.sh }
+
+  cpu-stress_init:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+        - config: { get_resource: cpu-stress_write_heat_params } 
+        - config: { get_resource: cpu-stress_configure }
+        - config: { get_resource: cpu-stress_signal }
+
+  cpu-stress:
+    type: OS::Nova::Server
+    properties:
+      name: cpu-stress
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: msrba
+      user_data_format: RAW
+      user_data: { get_resource: cpu-stress_init }
+      networks:
+        - port: { get_resource: cpu-stress_port }
+
+  cpu-stress_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_param: private_net_id }
+      fixed_ips:
+        - subnet_id: { get_param: private_subnet_id }
+
+  cpu-stress_floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network_id: { get_param: public_net_id }
+      port_id: { get_resource: cpu-stress_port }
+
+outputs:
+  cpu-stress_public_ip:
+    description: Floating IP of cpu-stress in public network
+    value: { get_attr: [ cpu-stress_floating_ip, floating_ip_address ] }
