@@ -1,5 +1,5 @@
 import pip
-pip.main(['install', 'keystoneauth1'])
+pip.main(['install', 'heatclient'])
 import logging
 import os
 from time import sleep
