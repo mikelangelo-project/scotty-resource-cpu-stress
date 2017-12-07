@@ -1,6 +1,6 @@
 import pip
-pip.main(['install', 'heatclient'])
-pip.main(['install', 'novaclient'])
+pip.main(['install', 'python_heatclient'])
+pip.main(['install', 'python_novaclient'])
 import logging
 import os
 from time import sleep
