@@ -1,3 +1,5 @@
+import pip
+pip.main(['install', 'keystoneauth1'])
 import logging
 import os
 from time import sleep
