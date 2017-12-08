@@ -86,7 +86,13 @@ resources:
       fixed_ips:
         - subnet_id: { get_param: private_subnet_id }
 
+  cpu-stress_floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network_id: { get_param: public_net_id }
+      port_id: { get_resource: cpu-stress_port }
+
 outputs:
   cpu-stress_public_ip:
     description: Floating IP of cpu-stress in public network
-    value: { get_attr: [ ] }
+    value: { get_attr: [ cpu-stress_floating_ip ] }
