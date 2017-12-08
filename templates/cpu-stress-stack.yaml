@@ -12,7 +12,7 @@ parameters:
   flavor:
     type: string
     description: flavor for cpu stress server
-    default: kvm.m1.small
+    default: kvm.m1.xlarge
   public_net_id:
     type: string
     description: ID of public network for which floating IP addresses will be allocated
