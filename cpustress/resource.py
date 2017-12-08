@@ -12,10 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class CPUStressResource(object):
-    heat_stack_name = 'cpu_stress_node'
-
     def __init__(self, context):
         resource = context.v1.resource
+        self.heat_stack_name = resource.name
         keystone_password_loader = keystoneauth1.loading.get_plugin_loader(
             'password')
         auth = keystone_password_loader.load_from_options(
