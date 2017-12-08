@@ -13,6 +13,9 @@ parameters:
     type: string
     description: flavor for cpu stress server
     default: kvm.m1.xlarge
+  public_net_id:
+    type: string
+    description: ID of public network for which floating IP addresses will be allocated
   private_net_id:
     type: string
     description: ID of private network into which servers get deployed
@@ -84,3 +87,6 @@ resources:
         - subnet_id: { get_param: private_subnet_id }
 
 outputs:
+  cpu-stress_public_ip:
+    description: Floating IP of cpu-stress in public network
+    value: { get_attr: [ ] }
