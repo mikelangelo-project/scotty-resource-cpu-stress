@@ -8,6 +8,7 @@ cpu_stress_resource = None
 
 
 def deploy(context):
+    reduce_logging()
     logger.info('Deploy cpu-stress with heat')
     global cpu_stress_resource
     cpu_stress_resource = CPUStressResource(context)
@@ -17,3 +18,12 @@ def deploy(context):
 
 def clean(context):
     cpu_stress_resource.clean(context)
+
+
+def reduce_logging():
+    reduce_loggers = {
+        'keystoneauth.identity.v2', 'keystoneauth.identity.v2.base',
+        'keystoneauth.session', 'urllib3.connectionpool', 'stevedore.extension'
+    }
+    for logger in reduce_loggers:
+        logging.getLogger(logger).setLevel(logging.WARNING)
