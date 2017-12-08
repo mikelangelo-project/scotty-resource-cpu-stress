@@ -68,7 +68,6 @@ class CPUStressResource(object):
 
     def clean(self, context):
         logger.warning('Skip clean resources for cpu-stress-stack')
-        return
         self._heat.stacks.delete(self.heat_stack_name)
         self._wait_for_stack_deleted()
 
