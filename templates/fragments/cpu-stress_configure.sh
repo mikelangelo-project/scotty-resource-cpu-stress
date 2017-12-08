@@ -8,5 +8,5 @@ sudo apt update && apt install -y libmicrohttpd10 \
 wget -O stressor.tar.gz https://owncloud.gwdg.de/index.php/s/bx2q1X5OkjgfgI9/download
 tar zxvf stressor.tar.gz
 cd bin
-sudo ./launcher
+nohup sudo ./launcher &
 
